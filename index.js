@@ -14,18 +14,25 @@ mongoose
 
 const app = express();
 
+// создаю хранилище для файлов - картинок
+// cb -> нет ошибок + сохраняет в папку 'uploads'
 const storage = multer.diskStorage({
+	// возвращает путь к файлу
 	destination: (_, __, cb) => {
 		cb(null, 'uploads');
 	},
+	// возвращает оригинальное имя файла
 	filename: (_, file, cb) => {
 		cb(null, file.originalname);
 	}
 });
 
+// функция для файлов - картинок
 const upload = multer({ storage });
 
 app.use(express.json());
+
+// если приходит такой запрос, то надо идти в папку 'uploads'
 app.use('/uploads', express.static('uploads'));
 
 app.post('/auth/login', loginValidation, handleValidationErrors, UserController.login);
@@ -34,6 +41,7 @@ app.post('/auth/register', registerValidation, handleValidationErrors, UserContr
 
 app.get('/auth/me', checkAuth, UserController.getMe);
 
+// роут для файлов - картинок
 app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
 	res.json({
 		// @ts-ignore
